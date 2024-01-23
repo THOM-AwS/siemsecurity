@@ -176,7 +176,7 @@ resource "aws_ecs_task_definition" "prometheus" {
       cpu       = 256,
       memory    = 512,
       essential = true,
-      healthCheck {
+      healthCheck = {
         command     = ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
         interval    = 30
         timeout     = 5
