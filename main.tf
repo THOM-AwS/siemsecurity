@@ -259,10 +259,11 @@ resource "aws_lb_listener" "grafana_listener" {
 }
 
 resource "aws_lb_target_group" "grafana_tg" {
-  name     = "grafana-tg"
-  port     = 3000
-  protocol = "HTTP"
-  vpc_id   = aws_vpc.main.id
+  name        = "grafana-tg"
+  port        = 3000
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
 
   health_check {
     enabled             = true
