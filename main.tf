@@ -138,7 +138,7 @@ resource "aws_ecs_task_definition" "grafana" {
   container_definitions = jsonencode([
     {
       name      = "grafana",
-      image     = "grafana/grafana-enterprise:10.3.1",
+      image     = "grafana/grafana-enterprise:latest",
       cpu       = 256,
       memory    = 512,
       essential = true,
@@ -172,10 +172,17 @@ resource "aws_ecs_task_definition" "prometheus" {
   container_definitions = jsonencode([
     {
       name      = "prometheus",
-      image     = "prom/prometheus:v2.49.1",
+      image     = "prom/prometheus:latest",
       cpu       = 256,
       memory    = 512,
       essential = true,
+      healthCheck {
+        command     = ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startPeriod = 15
+      }
       portMappings = [
         {
           containerPort = 9090,
@@ -252,11 +259,13 @@ resource "aws_lb_target_group" "grafana_tg" {
   vpc_id   = aws_vpc.main.id
 
   health_check {
+    enabled             = true
+    interval            = 30
+    path                = "/"
+    port                = "traffic-port"
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 5
-    path                = "/"
-    interval            = 30
     matcher             = "200-299"
   }
 }
