@@ -206,9 +206,9 @@ resource "aws_ecs_service" "prometheus_service" {
   desired_count   = 1
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.grafana_tg.arn
-    container_name   = "grafana"
-    container_port   = 3000
+    target_group_arn = aws_lb_target_group.prometheus_tg.arn
+    container_name   = "prometheus"
+    container_port   = 9090
   }
 
   network_configuration {
