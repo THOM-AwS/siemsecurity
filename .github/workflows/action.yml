@@ -61,5 +61,12 @@ jobs:
       region: us-east-1
     steps:
       - uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Terraform Init
+        run: terraform init -reconfigure
+
       - name: Terraform Apply
-        run: terraform apply
+        run: terraform apply -auto-approve
