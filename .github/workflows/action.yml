@@ -31,9 +31,7 @@ jobs:
       - name: Terraform Init
         run: terraform init
       - name: Terraform Plan
-        run: terraform plan -no-color > plan-output.txt
-      - name: Set Terraform Plan Output
-        run: echo "TERRAFORM_PLAN=$(cat plan-output.txt)" >> $GITHUB_ENV
+        run: terraform plan
 
   apply:
     runs-on: ubuntu-latest
