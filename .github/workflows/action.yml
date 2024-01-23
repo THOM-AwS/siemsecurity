@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
       - name: Lint Terraform
         uses: actionshub/terraform-lint@main
 
@@ -31,7 +31,7 @@ jobs:
       - name: Terraform Init
         run: terraform init
       - name: Terraform Plan
-        run: terraform plan -no-color | tee plan-output.txt
+        run: terraform plan -no-color > plan-output.txt
       - name: Set Terraform Plan Output
         run: echo "TERRAFORM_PLAN=$(cat plan-output.txt)" >> $GITHUB_ENV
 
