@@ -92,7 +92,7 @@ resource "aws_route_table_association" "private2" {
 
 # Security group for Fargate services
 resource "aws_security_group" "fargate_sg" {
-  vpc_id = aws_vpc.fargate_vpc.id
+  vpc_id = aws_vpc.main.id
 
   egress {
     from_port   = 0
