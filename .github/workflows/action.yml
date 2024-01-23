@@ -7,8 +7,6 @@ on:
   pull_request:
     branches:
       - "*"
-  workflow_run:
-    workflows: ["Pull Request Merge"]
 
 jobs:
   lint:
@@ -59,7 +57,7 @@ jobs:
 
   apply:
     runs-on: ubuntu-latest
-    if: github.event.workflow == 'Pull Request Merge'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     env:
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
