@@ -232,10 +232,6 @@ resource "aws_ecs_service" "prometheus_service" {
   }
 }
 
-
-
-
-
 # Application Load Balancer, Listener, and Target Group for Grafana
 resource "aws_lb" "grafana_alb" {
   name               = "grafana-alb"
@@ -276,45 +272,3 @@ resource "aws_lb_target_group" "grafana_tg" {
     matcher             = "200-299"
   }
 }
-
-# # Fargate service for Grafana updated with Load Balancer
-# resource "aws_ecs_service" "grafana_service" {
-#   name            = "grafana-service"
-#   cluster         = aws_ecs_cluster.fargate_cluster.id
-#   task_definition = aws_ecs_task_definition.grafana.arn
-#   launch_type     = "FARGATE"
-#   desired_count   = 1
-
-#   load_balancer {
-#     target_group_arn = aws_lb_target_group.grafana_tg.arn
-#     container_name   = "grafana"
-#     container_port   = 3000
-#   }
-
-#   network_configuration {
-#     subnets         = [aws_subnet.public1.id, aws_subnet.public2.id]
-#     security_groups = [aws_security_group.fargate_sg.id]
-#   }
-# }
-
-
-# Update Security Group for Fargate services
-# resource "aws_security_group" "fargate_sg" {
-#   vpc_id = aws_vpc.main.id
-
-#   egress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-
-#   # Allow HTTP access for Grafana
-#   ingress {
-#     from_port   = 80
-#     to_port     = 80
-#     protocol    = "tcp"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-
-# }
