@@ -138,16 +138,16 @@ resource "aws_ecs_task_definition" "grafana" {
   container_definitions = jsonencode([
     {
       name      = "grafana",
-      image     = "grafana/grafana-enterprise:10.3.1",
-      cpu       = 256,
-      memory    = 512,
-      essential = true,
-      portMappings = [
-        {
-          containerPort = 3000,
-          hostPort      = 3000,
-        },
-      ],
+      image     = "grafana/grafana:latest",
+      # ... other settings ...
+
+      healthCheck {
+        command     = ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startPeriod = 15
+      }
     },
   ])
 }
