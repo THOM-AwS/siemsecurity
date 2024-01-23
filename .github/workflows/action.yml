@@ -7,6 +7,8 @@ on:
   pull_request:
     branches:
       - "*"
+  workflow_run:
+    workflows: ["Pull Request Merge"]
 
 jobs:
   lint:
@@ -54,13 +56,14 @@ jobs:
 
   apply:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    if: github.event.workflow == 'Pull Request Merge'
     env:
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
       region: us-east-1
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v2
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
