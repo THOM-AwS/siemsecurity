@@ -40,7 +40,7 @@ resource "aws_subnet" "private2" {
 
 # NAT Gateway for private subnets
 resource "aws_eip" "nat_eip" {
-  vpc = true
+  domain = "vpc"
 }
 
 resource "aws_nat_gateway" "nat" {
@@ -90,9 +90,9 @@ resource "aws_route_table_association" "private2" {
   route_table_id = aws_route_table.private.id
 }
 
-Security group for Fargate services
+# Security group for Fargate services
 resource "aws_security_group" "fargate_sg" {
-  vpc_id = aws_vpc.fargate_vpc.id
+  vpc_id = aws_vpc.main.id
 
   egress {
     from_port   = 0
@@ -205,8 +205,14 @@ resource "aws_ecs_service" "prometheus_service" {
   launch_type     = "FARGATE"
   desired_count   = 1
 
+  load_balancer {
+    target_group_arn = aws_lb_target_group.grafana_tg.arn
+    container_name   = "grafana"
+    container_port   = 3000
+  }
+
   network_configuration {
-    subnets         = [aws_subnet.fargate_subnet.id]
+    subnets         = [aws_subnet.public1.id, aws_subnet.public2.id]
     security_groups = [aws_security_group.fargate_sg.id]
   }
 }
@@ -253,44 +259,44 @@ resource "aws_lb_target_group" "grafana_tg" {
   }
 }
 
-# Fargate service for Grafana updated with Load Balancer
-resource "aws_ecs_service" "grafana_service" {
-  name            = "grafana-service"
-  cluster         = aws_ecs_cluster.fargate_cluster.id
-  task_definition = aws_ecs_task_definition.grafana.arn
-  launch_type     = "FARGATE"
-  desired_count   = 1
+# # Fargate service for Grafana updated with Load Balancer
+# resource "aws_ecs_service" "grafana_service" {
+#   name            = "grafana-service"
+#   cluster         = aws_ecs_cluster.fargate_cluster.id
+#   task_definition = aws_ecs_task_definition.grafana.arn
+#   launch_type     = "FARGATE"
+#   desired_count   = 1
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.grafana_tg.arn
-    container_name   = "grafana"
-    container_port   = 3000
-  }
+#   load_balancer {
+#     target_group_arn = aws_lb_target_group.grafana_tg.arn
+#     container_name   = "grafana"
+#     container_port   = 3000
+#   }
 
-  network_configuration {
-    subnets         = [aws_subnet.public1.id, aws_subnet.public2.id]
-    security_groups = [aws_security_group.fargate_sg.id]
-  }
-}
+#   network_configuration {
+#     subnets         = [aws_subnet.public1.id, aws_subnet.public2.id]
+#     security_groups = [aws_security_group.fargate_sg.id]
+#   }
+# }
 
 
 # Update Security Group for Fargate services
-resource "aws_security_group" "fargate_sg" {
-  vpc_id = aws_vpc.main.id
+# resource "aws_security_group" "fargate_sg" {
+#   vpc_id = aws_vpc.main.id
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   egress {
+#     from_port   = 0
+#     to_port     = 0
+#     protocol    = "-1"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-  # Allow HTTP access for Grafana
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+#   # Allow HTTP access for Grafana
+#   ingress {
+#     from_port   = 80
+#     to_port     = 80
+#     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
+#   }
 
-}
+# }
