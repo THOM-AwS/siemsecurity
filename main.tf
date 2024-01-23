@@ -200,6 +200,7 @@ resource "aws_ecs_cluster" "fargate_cluster" {
 
 # Fargate service for Grafana
 resource "aws_ecs_service" "grafana_service" {
+  depends_on      = [aws_lb_listener.grafana_listener, aws_lb_target_group.grafana_tg]
   name            = "grafana-service"
   cluster         = aws_ecs_cluster.fargate_cluster.id
   task_definition = aws_ecs_task_definition.grafana.arn
