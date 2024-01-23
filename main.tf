@@ -206,9 +206,9 @@ resource "aws_ecs_service" "prometheus_service" {
   desired_count   = 1
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.prometheus_tg.arn # Change to the correct target group ARN for Prometheus
-    container_name   = "prometheus"                          # Update this to the correct container name
-    container_port   = 9090                                  # Change to the correct container port for Prometheus
+    target_group_arn = aws_lb_target_group.prometheus_tg.arn
+    container_name   = "prometheus"
+    container_port   = 9090
   }
 
   network_configuration {
