@@ -50,6 +50,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: `Terraform Plan:\n\`\`\`${planOutput}\`\`\``
+            })
 
   apply:
     runs-on: ubuntu-latest
