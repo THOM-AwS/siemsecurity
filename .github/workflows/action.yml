@@ -36,9 +36,6 @@ jobs:
         run: |
           planOutput=$(cat plan-output.txt)
           echo "TERRAFORM_PLAN=${planOutput}" >> $GITHUB_ENV
-          echo "::set-output name=TERRAFORM_PLAN::${planOutput}"
-          echo "Terraform Plan:"
-          echo "$planOutput"
         shell: bash
       - name: Comment PR
         if: github.event_name == 'pull_request'
