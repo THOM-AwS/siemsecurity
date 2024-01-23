@@ -1,12 +1,12 @@
 name: Makefile CI
 
 on:
-  pull_request:
-    branches: [master]
-    types: [opened, synchronize, closed]
+  workflow_dispatch:
+  # pull_request:
+  #   branches: [master]
+  #   types: [opened, synchronize, closed]
   push:
     branches: ["*"]
-  workflow_dispatch:
 
 jobs:
   lint:
@@ -61,5 +61,9 @@ jobs:
       region: us-east-1
     steps:
       - uses: actions/checkout@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+      - name: Terraform Init
+        run: terraform init -reconfigure
       - name: Terraform Apply
-        run: terraform apply
+        run: terraform apply -auto-approve
