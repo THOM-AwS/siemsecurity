@@ -3,13 +3,14 @@ name: Makefile CI
 on:
   push:
     branches-ignore:
-      - master
+      - "*"
   pull_request:
     branches:
       - "*"
 
 jobs:
   lint:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -35,7 +36,7 @@ jobs:
 
   apply:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master' # && github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     env:
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
