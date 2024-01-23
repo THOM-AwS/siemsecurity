@@ -177,7 +177,7 @@ resource "aws_ecs_task_definition" "prometheus" {
       memory    = 512,
       essential = true,
       healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
+        command     = ["CMD-SHELL", "curl -f http://localhost:9090/ || exit 1"]
         interval    = 30
         timeout     = 5
         retries     = 3
@@ -205,6 +205,12 @@ resource "aws_ecs_service" "grafana_service" {
   task_definition = aws_ecs_task_definition.grafana.arn
   launch_type     = "FARGATE"
   desired_count   = 1
+
+  load_balancer {
+    target_group_arn = aws_lb_target_group.grafana_tg.arn
+    container_name   = "grafana"
+    container_port   = 3000
+  }
 
   network_configuration {
     subnets         = [aws_subnet.private1.id, aws_subnet.private2.id]
