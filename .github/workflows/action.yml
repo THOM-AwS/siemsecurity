@@ -33,24 +33,7 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -no-color | tee plan-output.txt
       - name: Set Terraform Plan Output
-        run: |
-          planOutput=$(cat plan-output.txt)
-          echo "TERRAFORM_PLAN=${planOutput}" >> $GITHUB_ENV
-        shell: bash
-      - name: Comment PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.TOKEN }}
-          script: |
-            const fs = require('fs');
-            const planOutput = fs.readFileSync('plan-output.txt', 'utf8');
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `Terraform Plan:\n\`\`\`${planOutput}\`\`\``
-            })
+        run: echo "TERRAFORM_PLAN=$(cat plan-output.txt)" >> $GITHUB_ENV
 
   apply:
     runs-on: ubuntu-latest
