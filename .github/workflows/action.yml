@@ -41,13 +41,14 @@ jobs:
           path: plan-output.txt
       - name: Comment PR
         if: github.event_name == 'pull_request'
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.TOKEN }}
-          script: |
-            const fs = require('fs');
-            const planOutput = fs.readFileSync('plan-output.txt', 'utf8');
-            echo "TERRAFORM_PLAN=${planOutput}" >> $GITHUB_ENV # Set output using Environment File
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          const fs = require('fs');
+          const planOutput = fs.readFileSync('plan-output.txt', 'utf8');
+          echo "TERRAFORM_PLAN=${planOutput}" >> $GITHUB_ENV # Set output using Environment File
+          echo "::set-output name=TERRAFORM_PLAN::${planOutput}"
+          echo "Terraform Plan:\n\`\`\`${planOutput}\`\`\`"
 
   apply:
     runs-on: ubuntu-latest
