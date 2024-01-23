@@ -40,7 +40,7 @@ resource "aws_subnet" "private2" {
 
 # NAT Gateway for private subnets
 resource "aws_eip" "nat_eip" {
-  vpc = true
+  domain = "vpc"
 }
 
 resource "aws_nat_gateway" "nat" {
