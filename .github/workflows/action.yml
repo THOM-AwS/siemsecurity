@@ -7,8 +7,6 @@ on:
   pull_request:
     branches:
       - "*"
-  workflow_run:
-    workflows: ["Pull Request Merge"]
 
 jobs:
   lint:
@@ -27,46 +25,29 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       region: us-east-1
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
         run: terraform init
       - name: Terraform Plan
-        run: terraform plan -no-color | tee plan-output.txt
-      - name: Upload Terraform Plan as Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: terraform-plan
-          path: plan-output.txt
-      - name: Comment PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.TOKEN }}
-          script: |
-            const fs = require('fs');
-            const planOutput = fs.readFileSync('plan-output.txt', 'utf8');
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `Terraform Plan:\n\`\`\`${planOutput}\`\`\``
-            })
+        run: terraform plan -no-color > plan-output.txt
+      - name: Set Terraform Plan Output
+        run: echo "TERRAFORM_PLAN=$(cat plan-output.txt)" >> $GITHUB_ENV
 
   apply:
     runs-on: ubuntu-latest
-    if: github.event.workflow == 'Pull Request Merge'
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     env:
       AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
       AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
       region: us-east-1
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
-        run: terraform init -reconfigure
+        run: terraform init
       - name: Terraform Apply
         run: terraform apply -auto-approve
