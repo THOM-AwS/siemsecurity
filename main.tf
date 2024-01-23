@@ -90,23 +90,23 @@ resource "aws_route_table_association" "private2" {
   route_table_id = aws_route_table.private.id
 }
 
-# Security group for Fargate services
-# resource "aws_security_group" "fargate_sg" {
-#   vpc_id = aws_vpc.fargate_vpc.id
+Security group for Fargate services
+resource "aws_security_group" "fargate_sg" {
+  vpc_id = aws_vpc.fargate_vpc.id
 
-#   egress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-#   ingress {
-#     from_port   = 0
-#     to_port     = 0
-#     protocol    = "-1"
-#     cidr_blocks = ["0.0.0.0/0"]
-#   }
-# }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
 # Execution role for Fargate
 resource "aws_iam_role" "ecs_execution_role" {
@@ -192,7 +192,7 @@ resource "aws_ecs_service" "grafana_service" {
   desired_count   = 1
 
   network_configuration {
-    subnets         = [aws_subnet.fargate_subnet.id]
+    subnets         = [aws_subnet.public1.id, aws_subnet.public2.id]
     security_groups = [aws_security_group.fargate_sg.id]
   }
 }
