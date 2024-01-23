@@ -139,7 +139,15 @@ resource "aws_ecs_task_definition" "grafana" {
     {
       name      = "grafana",
       image     = "grafana/grafana:latest",
-      # ... other settings ...
+      cpu       = 256,
+      memory    = 512,
+      essential = true,
+      portMappings = [
+        {
+          containerPort = 3000,
+          hostPort      = 3000,
+        },
+      ],
 
       healthCheck {
         command     = ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
