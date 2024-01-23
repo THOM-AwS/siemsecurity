@@ -62,4 +62,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Terraform Apply
-        run: make apply
+        run: terraform apply
