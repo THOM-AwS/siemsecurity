@@ -47,12 +47,7 @@ jobs:
           script: |
             const fs = require('fs');
             const planOutput = fs.readFileSync('plan-output.txt', 'utf8');
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `Terraform Plan:\n\`\`\`${planOutput}\`\`\``
-            })
+            echo "TERRAFORM_PLAN=${planOutput}" >> $GITHUB_ENV # Set output using Environment File
 
   apply:
     runs-on: ubuntu-latest
@@ -67,6 +62,6 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
-        run: terraform init -reconfigure
+        run: terraform init
       - name: Terraform Apply
         run: terraform apply -auto-approve
