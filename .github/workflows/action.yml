@@ -34,21 +34,28 @@ jobs:
         run: terraform init
       - name: Terraform Plan
         run: terraform plan -no-color | tee plan-output.txt
-      - name: Upload Terraform Plan as Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: terraform-plan
-          path: plan-output.txt
+      - name: Set Terraform Plan Output
+        run: |
+          planOutput=$(cat plan-output.txt)
+          echo "TERRAFORM_PLAN=${planOutput}" >> $GITHUB_ENV
+          echo "::set-output name=TERRAFORM_PLAN::${planOutput}"
+          echo "Terraform Plan:"
+          echo "$planOutput"
+        shell: bash
       - name: Comment PR
         if: github.event_name == 'pull_request'
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-        run: |
-          const fs = require('fs');
-          const planOutput = fs.readFileSync('plan-output.txt', 'utf8');
-          echo "TERRAFORM_PLAN=${planOutput}" >> $GITHUB_ENV # Set output using Environment File
-          echo "::set-output name=TERRAFORM_PLAN::${planOutput}"
-          echo "Terraform Plan:\n\`\`\`${planOutput}\`\`\`"
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            const fs = require('fs');
+            const planOutput = fs.readFileSync('plan-output.txt', 'utf8');
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Terraform Plan:\n\`\`\`${planOutput}\`\`\``
+            })
 
   apply:
     runs-on: ubuntu-latest
