@@ -138,7 +138,7 @@ resource "aws_ecs_task_definition" "grafana" {
   container_definitions = jsonencode([
     {
       name      = "grafana",
-      image     = "grafana/grafana:latest",
+      image     = "grafana/grafana-enterprise:10.3.1",
       cpu       = 256,
       memory    = 512,
       essential = true,
