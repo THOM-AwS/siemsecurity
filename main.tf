@@ -205,12 +205,6 @@ resource "aws_ecs_service" "prometheus_service" {
   launch_type     = "FARGATE"
   desired_count   = 1
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.prometheus_tg.arn
-    container_name   = "prometheus"
-    container_port   = 9090
-  }
-
   network_configuration {
     subnets         = [aws_subnet.public1.id, aws_subnet.public2.id]
     security_groups = [aws_security_group.fargate_sg.id]
