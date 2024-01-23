@@ -207,7 +207,7 @@ resource "aws_ecs_service" "grafana_service" {
   desired_count   = 1
 
   network_configuration {
-    subnets         = [aws_subnet.public1.id, aws_subnet.public2.id]
+    subnets         = [aws_subnet.private1.id, aws_subnet.private2.id]
     security_groups = [aws_security_group.fargate_sg.id]
   }
 }
@@ -221,7 +221,7 @@ resource "aws_ecs_service" "prometheus_service" {
   desired_count   = 1
 
   network_configuration {
-    subnets         = [aws_subnet.public1.id, aws_subnet.public2.id]
+    subnets         = [aws_subnet.private1.id, aws_subnet.private2.id]
     security_groups = [aws_security_group.fargate_sg.id]
   }
 }
