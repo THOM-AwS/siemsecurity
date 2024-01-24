@@ -139,6 +139,7 @@ resource "aws_ecs_task_definition" "grafana" {
     {
       name      = "grafana",
       image     = "grafana/grafana:latest",
+
       cpu       = 256,
       memory    = 512,
       essential = true,
