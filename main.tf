@@ -148,6 +148,15 @@ resource "aws_ecs_task_definition" "grafana" {
       name  = "grafana",
       image = "grafana/grafana-enterprise:latest",
 
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_log_group.name
+          awslogs-region        = "us-east-1"
+          awslogs-stream-prefix = "grafana"
+        }
+      }
+
       mountPoints = [{
         sourceVolume  = "grafana-volume"
         containerPath = "/var/lib/grafana"
@@ -196,6 +205,15 @@ resource "aws_ecs_task_definition" "prometheus" {
     {
       name  = "prometheus",
       image = "prom/prometheus:latest",
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = aws_cloudwatch_log_group.ecs_log_group.name
+          awslogs-region        = "us-east-1"
+          awslogs-stream-prefix = "prometheus"
+        }
+      }
 
       mountPoints = [{
         sourceVolume  = "prometheus-volume"
@@ -309,10 +327,16 @@ resource "aws_lb_target_group" "grafana_tg" {
 
 resource "aws_efs_file_system" "efs_grafana" {
   creation_token = "efs-grafana"
+  tags = {
+    Name = "efs-grafana"
+  }
 }
 
 resource "aws_efs_file_system" "efs_prometheus" {
   creation_token = "efs-prometheus"
+  tags = {
+    Name = "efs-prometheus"
+  }
 }
 
 resource "aws_efs_mount_target" "efs_grafana_mt" {
@@ -329,3 +353,6 @@ resource "aws_efs_mount_target" "efs_prometheus_mt" {
   security_groups = [aws_security_group.fargate_sg.id]
 }
 
+resource "aws_cloudwatch_log_group" "ecs_log_group" {
+  name = "/ecs/siem"
+}
