@@ -183,6 +183,33 @@ resource "aws_ecs_task_definition" "prometheus" {
         retries     = 3
         startPeriod = 15
       }
+    },
+  ])
+}
+
+# Task definition for Prometheus
+resource "aws_ecs_task_definition" "prometheus" {
+  family                   = "prometheus"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = "256" # Adjust as needed
+  memory                   = "512" # Adjust as needed
+  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+
+  container_definitions = jsonencode([
+    {
+      name      = "prometheus",
+      image     = "prom/prometheus:latest",
+      cpu       = 256,
+      memory    = 512,
+      essential = true,
+      healthCheck = {
+        command     = ["CMD-SHELL", "curl -f http://localhost:9090/ || exit 1"]
+        interval    = 30
+        timeout     = 5
+        retries     = 3
+        startPeriod = 15
+      }
       portMappings = [
         {
           containerPort = 9090,
@@ -222,7 +249,6 @@ resource "aws_ecs_service" "grafana_service" {
     aws_lb_target_group.grafana_tg
   ]
 }
-
 
 # Fargate service for Prometheus
 resource "aws_ecs_service" "prometheus_service" {
@@ -278,3 +304,4 @@ resource "aws_lb_target_group" "grafana_tg" {
     matcher             = "200-299"
   }
 }
+
