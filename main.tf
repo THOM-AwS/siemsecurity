@@ -127,38 +127,38 @@ resource "aws_iam_role" "ecs_execution_role" {
 }
 
 # Task definition for Grafana
-resource "aws_ecs_task_definition" "grafana" {
-  family                   = "grafana"
-  network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
-  cpu                      = "256" # Adjust as needed
-  memory                   = "512" # Adjust as needed
-  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+# resource "aws_ecs_task_definition" "grafana" {
+#   family                   = "grafana"
+#   network_mode             = "awsvpc"
+#   requires_compatibilities = ["FARGATE"]
+#   cpu                      = "256" # Adjust as needed
+#   memory                   = "512" # Adjust as needed
+#   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
-  container_definitions = jsonencode([
-    {
-      name      = "grafana",
-      image     = "grafana/grafana-enterprise:latest",
-      cpu       = 256,
-      memory    = 512,
-      essential = true,
-      portMappings = [
-        {
-          containerPort = 3000,
-          hostPort      = 3000,
-        },
-      ],
+#   container_definitions = jsonencode([
+#     {
+#       name      = "grafana",
+#       image     = "grafana/grafana-enterprise:latest",
+#       cpu       = 256,
+#       memory    = 512,
+#       essential = true,
+#       portMappings = [
+#         {
+#           containerPort = 3000,
+#           hostPort      = 3000,
+#         },
+#       ],
 
-      healthCheck = {
-        command     = ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
-        interval    = 30
-        timeout     = 5
-        retries     = 3
-        startPeriod = 15
-      }
-    },
-  ])
-}
+#       healthCheck = {
+#         command     = ["CMD-SHELL", "curl -f http://localhost:3000/ || exit 1"]
+#         interval    = 30
+#         timeout     = 5
+#         retries     = 3
+#         startPeriod = 15
+#       }
+#     },
+#   ])
+# }
 
 # Task definition for Prometheus
 resource "aws_ecs_task_definition" "prometheus" {
@@ -198,30 +198,30 @@ resource "aws_ecs_cluster" "fargate_cluster" {
   name = "fargate-cluster"
 }
 
-# Fargate service for Grafana
-resource "aws_ecs_service" "grafana_service" {
-  name            = "grafana-service"
-  cluster         = aws_ecs_cluster.fargate_cluster.id
-  task_definition = aws_ecs_task_definition.grafana.arn
-  launch_type     = "FARGATE"
-  desired_count   = 1
+# # Fargate service for Grafana
+# resource "aws_ecs_service" "grafana_service" {
+#   name            = "grafana-service"
+#   cluster         = aws_ecs_cluster.fargate_cluster.id
+#   task_definition = aws_ecs_task_definition.grafana.arn
+#   launch_type     = "FARGATE"
+#   desired_count   = 1
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.grafana_tg.arn
-    container_name   = "grafana"
-    container_port   = 3000
-  }
+#   load_balancer {
+#     target_group_arn = aws_lb_target_group.grafana_tg.arn
+#     container_name   = "grafana"
+#     container_port   = 3000
+#   }
 
-  network_configuration {
-    subnets         = [aws_subnet.private1.id, aws_subnet.private2.id]
-    security_groups = [aws_security_group.fargate_sg.id]
-  }
+#   network_configuration {
+#     subnets         = [aws_subnet.private1.id, aws_subnet.private2.id]
+#     security_groups = [aws_security_group.fargate_sg.id]
+#   }
 
-  depends_on = [
-    aws_lb.grafana_alb,
-    aws_lb_target_group.grafana_tg
-  ]
-}
+#   depends_on = [
+#     aws_lb.grafana_alb,
+#     aws_lb_target_group.grafana_tg
+#   ]
+# }
 
 
 # Fargate service for Prometheus
@@ -239,15 +239,15 @@ resource "aws_ecs_service" "prometheus_service" {
 }
 
 # Application Load Balancer, Listener, and Target Group for Grafana
-resource "aws_lb" "grafana_alb" {
-  name               = "grafana-alb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.fargate_sg.id]
-  subnets            = [aws_subnet.public1.id, aws_subnet.public2.id]
+# resource "aws_lb" "grafana_alb" {
+#   name               = "grafana-alb"
+#   internal           = false
+#   load_balancer_type = "application"
+#   security_groups    = [aws_security_group.fargate_sg.id]
+#   subnets            = [aws_subnet.public1.id, aws_subnet.public2.id]
 
-  enable_deletion_protection = false
-}
+#   enable_deletion_protection = false
+# }
 
 # resource "aws_lb_listener" "grafana_listener" {
 #   load_balancer_arn = aws_lb.grafana_alb.arn
@@ -260,21 +260,22 @@ resource "aws_lb" "grafana_alb" {
 #   }
 # }
 
-resource "aws_lb_target_group" "grafana_tg" {
-  name        = "grafana-tg"
-  port        = 3000
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "ip"
+# resource "aws_lb_target_group" "grafana_tg" {
+#   name        = "grafana-tg"
+#   port        = 3000
+#   protocol    = "HTTP"
+#   vpc_id      = aws_vpc.main.id
+#   target_type = "ip"
 
-  health_check {
-    enabled             = true
-    interval            = 30
-    path                = "/"
-    port                = "traffic-port"
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 5
-    matcher             = "200-299"
-  }
-}
+#   health_check {
+#     enabled             = true
+#     interval            = 30
+#     path                = "/"
+#     port                = "traffic-port"
+#     healthy_threshold   = 2
+#     unhealthy_threshold = 2
+#     timeout             = 5
+#     matcher             = "200-299"
+#   }
+# }
+
