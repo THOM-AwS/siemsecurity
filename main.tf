@@ -216,7 +216,13 @@ resource "aws_ecs_service" "grafana_service" {
     subnets         = [aws_subnet.private1.id, aws_subnet.private2.id]
     security_groups = [aws_security_group.fargate_sg.id]
   }
+
+  depends_on = [
+    aws_lb.grafana_alb,
+    aws_lb_target_group.grafana_tg
+  ]
 }
+
 
 # Fargate service for Prometheus
 resource "aws_ecs_service" "prometheus_service" {
