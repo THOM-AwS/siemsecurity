@@ -154,14 +154,6 @@ resource "aws_ecs_task_definition" "grafana" {
   cpu                      = "256" # Adjust as needed
   memory                   = "512" # Adjust as needed
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
-  volume {
-    name = "grafana-volume"
-
-    efs_volume_configuration {
-      file_system_id = aws_efs_file_system.efs_grafana.id
-      root_directory = "/"
-    }
-  }
 
   container_definitions = jsonencode([
     {
@@ -176,11 +168,6 @@ resource "aws_ecs_task_definition" "grafana" {
           awslogs-stream-prefix = "grafana"
         }
       }
-
-      mountPoints = [{
-        sourceVolume  = "grafana-volume"
-        containerPath = "/var/lib/grafana"
-      }]
 
       cpu       = 256,
       memory    = 512,
@@ -212,15 +199,6 @@ resource "aws_ecs_task_definition" "prometheus" {
   memory                   = "512" # Adjust as needed
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
-  volume {
-    name = "prometheus-volume"
-
-    efs_volume_configuration {
-      file_system_id = aws_efs_file_system.efs_prometheus.id
-      root_directory = "/"
-    }
-  }
-
   container_definitions = jsonencode([
     {
       name  = "prometheus",
@@ -234,11 +212,6 @@ resource "aws_ecs_task_definition" "prometheus" {
           awslogs-stream-prefix = "prometheus"
         }
       }
-
-      mountPoints = [{
-        sourceVolume  = "prometheus-volume"
-        containerPath = "/prometheus"
-      }]
 
       cpu       = 256,
       memory    = 512,
@@ -343,34 +316,6 @@ resource "aws_lb_target_group" "grafana_tg" {
     timeout             = 5
     matcher             = "200-299"
   }
-}
-
-resource "aws_efs_file_system" "efs_grafana" {
-  creation_token = "efs-grafana"
-  tags = {
-    Name = "efs-grafana"
-  }
-}
-
-resource "aws_efs_file_system" "efs_prometheus" {
-  creation_token = "efs-prometheus"
-  tags = {
-    Name = "efs-prometheus"
-  }
-}
-
-resource "aws_efs_mount_target" "efs_grafana_mt" {
-  for_each        = toset([aws_subnet.private1.id, aws_subnet.private2.id])
-  file_system_id  = aws_efs_file_system.efs_grafana.id
-  subnet_id       = each.value
-  security_groups = [aws_security_group.fargate_sg.id]
-}
-
-resource "aws_efs_mount_target" "efs_prometheus_mt" {
-  for_each        = toset([aws_subnet.private1.id, aws_subnet.private2.id])
-  file_system_id  = aws_efs_file_system.efs_prometheus.id
-  subnet_id       = each.value
-  security_groups = [aws_security_group.fargate_sg.id]
 }
 
 resource "aws_cloudwatch_log_group" "ecs_log_group" {
