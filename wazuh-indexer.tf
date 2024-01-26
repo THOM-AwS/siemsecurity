@@ -19,7 +19,7 @@ module "ec2_wazuh-indexer-01" {
 
 # Persistent EBS Volume
 resource "aws_ebs_volume" "gp3_volume_wazuh-indexer" {
-  availability_zone = "us-east-1b"
+  availability_zone = "us-east-1a"
   size              = 100
   type              = "gp3"
 
