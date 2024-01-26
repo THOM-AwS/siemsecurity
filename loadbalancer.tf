@@ -46,3 +46,4 @@ resource "aws_lb_target_group_attachment" "grafana_attachment" {
   target_id        = module.ec2_grafana.id
   port             = 3000
 }
+
