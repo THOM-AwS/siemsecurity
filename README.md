@@ -95,3 +95,12 @@ sudo systemctl start prometheus.service
 
 # Verify the Installation
 sudo systemctl status prometheus.service
+
+## wazuh indexer
+
+    sudo mkfs -t ext4 /dev/xvdh
+    2  sudo mkdir /var/lib/wazuh
+    3*
+    4  sudo mount /dev/xvdh /var/lib/wazuh
+    5  echo '/dev/xvdh /var/lib/wazuh ext4 defaults,nofail 0 2' | sudo tee -a /etc/fstab
+    
