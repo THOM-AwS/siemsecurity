@@ -40,3 +40,10 @@ resource "aws_lb_target_group" "grafana_tg" {
     matcher             = "200-299"
   }
 }
+
+resource "aws_lb_target_group_attachment" "grafana_attachment" {
+  target_group_arn = aws_lb_target_group.grafana_tg.arn
+  target_id        = module.ec2_grafana.id
+  port             = 3000
+}
+
