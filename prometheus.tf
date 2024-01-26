@@ -9,6 +9,7 @@ module "ec2_prometheus" {
   instance_type          = "t2.small"
   subnet_id              = aws_subnet.private2.id
   vpc_security_group_ids = [aws_security_group.all.id]
+  iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
 
   tags = {
     Terraform   = "true"
