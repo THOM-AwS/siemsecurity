@@ -16,7 +16,7 @@ resource "aws_lb_listener" "grafana_listener" {
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   port              = "443"
   protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate_validation.apse2_cert_validation.certificate_arn
+  certificate_arn   = aws_acm_certificate_validation.apse2_wildcard_cert_validation.certificate_arn
 
   default_action {
     type             = "forward"
