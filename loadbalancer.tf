@@ -76,7 +76,7 @@ resource "aws_lb_target_group" "wazuh_tg" {
 # Wazuh Dashboard Target Group Attachment
 resource "aws_lb_target_group_attachment" "wazuh_attachment" {
   target_group_arn = aws_lb_target_group.wazuh_tg.arn
-  target_id        = module.ec2_wazuh.id
+  target_id        = module.ec2_wazuh-indexer-01.id
   port             = 5601
 }
 
