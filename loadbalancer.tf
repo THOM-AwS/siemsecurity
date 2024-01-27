@@ -2,7 +2,7 @@
 
 # Application Load Balancer, Listener, and Target Group for Grafana
 resource "aws_lb" "soc_alb" {
-  name               = "grafana-alb"
+  name               = "soc-alb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.all.id]
