@@ -56,8 +56,8 @@ resource "aws_lb_target_group_attachment" "grafana_attachment" {
 # Wazuh Dashboard Target Group
 resource "aws_lb_target_group" "wazuh_tg" {
   name        = "wazuh-tg"
-  port        = 5601
-  protocol    = "HTTP"
+  port        = 443
+  protocol    = "HTTPS"
   vpc_id      = aws_vpc.main.id
   target_type = "instance"
 
