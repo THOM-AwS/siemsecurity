@@ -27,7 +27,6 @@ resource "aws_route53_record" "apse2_wildcard_cert_validation" {
       record = dvo.resource_record_value
     }
   }
-
   name    = each.value.name
   type    = each.value.type
   zone_id = aws_route53_zone.apse2-name.zone_id
@@ -39,4 +38,29 @@ resource "aws_route53_record" "apse2_wildcard_cert_validation" {
 resource "aws_acm_certificate_validation" "apse2_wildcard_cert_validation" {
   certificate_arn         = aws_acm_certificate.apse2_wildcard_cert.arn
   validation_record_fqdns = [for record in aws_route53_record.apse2_wildcard_cert_validation : record.fqdn]
+}
+
+
+resource "aws_route53_record" "wazuh_record" {
+  zone_id = aws_route53_zone.apse2-name.zone_id
+  name    = "wazuh.apse2.com"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.soc_alb.dns_name
+    zone_id                = aws_lb.soc_alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "grafana_record" {
+  zone_id = aws_route53_zone.apse2-name.zone_id
+  name    = "grafana.apse2.com"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.soc_alb.dns_name
+    zone_id                = aws_lb.soc_alb.zone_id
+    evaluate_target_health = true
+  }
 }

@@ -11,7 +11,7 @@ resource "aws_lb" "soc_alb" {
   enable_deletion_protection = false
 }
 
-resource "aws_lb_listener" "grafana_listener" {
+resource "aws_lb_listener" "https_listener" {
   load_balancer_arn = aws_lb.soc_alb.arn
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   port              = "443"
@@ -19,10 +19,47 @@ resource "aws_lb_listener" "grafana_listener" {
   certificate_arn   = aws_acm_certificate_validation.apse2_wildcard_cert_validation.certificate_arn
 
   default_action {
+    type = "fixed-response"
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "404 Not Found"
+      status_code  = "404"
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "grafana_subdomain" {
+  listener_arn = aws_lb_listener.https_listener.arn
+  priority     = 100
+
+  action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.grafana_tg.arn
   }
+
+  condition {
+    host_header {
+      values = ["grafana.apse2.com"]
+    }
+  }
 }
+
+resource "aws_lb_listener_rule" "wazuh_subdomain" {
+  listener_arn = aws_lb_listener.https_listener.arn
+  priority     = 101
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.wazuh_tg.arn
+  }
+
+  condition {
+    host_header {
+      values = ["wazuh.apse2.com"]
+    }
+  }
+}
+
 
 resource "aws_lb_target_group" "grafana_tg" {
   name        = "grafana-tg"
@@ -65,7 +102,7 @@ resource "aws_lb_target_group" "wazuh_tg" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 5
-    matcher             = "200-299"
+    matcher             = "200-399"
   }
 }
 
@@ -75,19 +112,3 @@ resource "aws_lb_target_group_attachment" "wazuh_attachment" {
   target_id        = module.ec2_wazuh-indexer-01.id
   port             = 443
 }
-
-# Listener for Wazuh Dashboard
-resource "aws_lb_listener" "wazuh_listener" {
-  load_balancer_arn = aws_lb.soc_alb.arn
-  port              = "81"
-  protocol          = "HTTP"
-
-  # Assuming you want to route traffic to the Wazuh dashboard based on path
-  # Update this rule as necessary based on your desired routing criteria
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.wazuh_tg.arn
-  }
-}
-
-
