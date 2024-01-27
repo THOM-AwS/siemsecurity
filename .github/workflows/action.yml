@@ -38,7 +38,7 @@ jobs:
       #   id: plan
       #   run: terraform plan -no-color
       - name: terraform import # run this once and remove.
-        run: terraform import aws_route53_zone.apse2 Z09894843QG7J1MO45IQ0
+        run: terraform import aws_route53_zone.apse2-name Z09894843QG7J1MO45IQ0
       # - name: Comment PR with Terraform Plan
       #   uses: actions/github-script@v3
       #   if: github.event_name == 'pull_request'
