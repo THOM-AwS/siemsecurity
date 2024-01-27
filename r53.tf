@@ -1,5 +1,5 @@
 # Hosted Zone - Reference an existing hosted zone
-resource "aws_route53_zone" "apse2" {
+resource "aws_route53_zone" "apse2-name" {
   name = "apse2.com"
 }
 
@@ -30,7 +30,7 @@ resource "aws_route53_record" "apse2_wildcard_cert_validation" {
 
   name    = each.value.name
   type    = each.value.type
-  zone_id = aws_route53_zone.apse2.zone_id
+  zone_id = aws_route53_zone.apse2-name.zone_id
   records = [each.value.record]
   ttl     = 60
 }
