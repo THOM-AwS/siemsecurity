@@ -1,5 +1,5 @@
 # Hosted Zone - Reference an existing hosted zone
-resource "aws_route53_zone" "apse2" {
+resource "aws_route53_zone" "apse2-name" {
   name = "apse2.com"
 }
 
