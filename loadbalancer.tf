@@ -64,7 +64,7 @@ resource "aws_lb_listener_rule" "wazuh_subdomain" {
 resource "aws_lb_target_group" "grafana_tg" {
   name        = "grafana-tg"
   port        = 3000
-  protocol    = "HTTPS"
+  protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
   target_type = "instance"
 
