@@ -34,24 +34,24 @@ jobs:
         run: terraform init -no-color
       - name: Terraform validate
         run: terraform validate -no-color
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan -no-color
-      # - name: terraform import # run this once and remove.
-      #   run: terraform import aws_route53_zone.apse2 Z09894843QG7J1MO45IQ0
-      - name: Comment PR with Terraform Plan
-        uses: actions/github-script@v3
-        if: github.event_name == 'pull_request'
-        with:
-          github-token: ${{ secrets.TOKEN }}
-          script: |
-            const output = `Terraform Plan:\n\`\`\`${{ steps.plan.outputs.stdout }}\`\`\``;
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+      # - name: Terraform Plan
+      #   id: plan
+      #   run: terraform plan -no-color
+      - name: terraform import # run this once and remove.
+        run: terraform import aws_route53_zone.apse2 Z09894843QG7J1MO45IQ0
+      # - name: Comment PR with Terraform Plan
+      #   uses: actions/github-script@v3
+      #   if: github.event_name == 'pull_request'
+      #   with:
+      #     github-token: ${{ secrets.TOKEN }}
+      #     script: |
+      #       const output = `Terraform Plan:\n\`\`\`${{ steps.plan.outputs.stdout }}\`\`\``;
+      #       github.issues.createComment({
+      #         issue_number: context.issue.number,
+      #         owner: context.repo.owner,
+      #         repo: context.repo.repo,
+      #         body: output
+      #       })
 
   apply:
     runs-on: ubuntu-latest
