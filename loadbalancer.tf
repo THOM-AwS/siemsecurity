@@ -13,8 +13,10 @@ resource "aws_lb" "soc_alb" {
 
 resource "aws_lb_listener" "grafana_listener" {
   load_balancer_arn = aws_lb.soc_alb.arn
-  port              = "80"
-  protocol          = "HTTP"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  port              = "443"
+  protocol          = "HTTPS"
+  certificate_arn   = aws_acm_certificate_validation.apse2_cert_validation.certificate_arn
 
   default_action {
     type             = "forward"
@@ -25,7 +27,7 @@ resource "aws_lb_listener" "grafana_listener" {
 resource "aws_lb_target_group" "grafana_tg" {
   name        = "grafana-tg"
   port        = 3000
-  protocol    = "HTTP"
+  protocol    = "HTTPS"
   vpc_id      = aws_vpc.main.id
   target_type = "instance"
 
@@ -37,7 +39,7 @@ resource "aws_lb_target_group" "grafana_tg" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 5
-    matcher             = "200-299"
+    matcher             = "200-399"
   }
 }
 
@@ -46,12 +48,6 @@ resource "aws_lb_target_group_attachment" "grafana_attachment" {
   target_id        = module.ec2_grafana.id
   port             = 3000
 }
-
-
-
-
-
-
 
 # Wazuh Dashboard Target Group
 resource "aws_lb_target_group" "wazuh_tg" {
@@ -93,3 +89,5 @@ resource "aws_lb_listener" "wazuh_listener" {
     target_group_arn = aws_lb_target_group.wazuh_tg.arn
   }
 }
+
+
