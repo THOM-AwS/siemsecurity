@@ -134,7 +134,7 @@ resource "aws_lb_target_group" "wazuh_tg" {
 }
 
 resource "aws_lb_target_group" "graylog_tg" {
-  name        = "grafana-tg"
+  name        = "graylog-tg"
   port        = 9000
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
