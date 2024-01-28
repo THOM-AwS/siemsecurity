@@ -77,21 +77,21 @@ resource "aws_lb_listener_rule" "graylog_subdomain" {
   }
 }
 
-resource "aws_lb_listener_rule" "prometheus_subdomain" {
-  listener_arn = aws_lb_listener.https_listener.arn
-  priority     = 104
+# resource "aws_lb_listener_rule" "prometheus_subdomain" {
+#   listener_arn = aws_lb_listener.https_listener.arn
+#   priority     = 104
 
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.prometheus_tg.arn
-  }
+#   action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.prometheus_tg.arn
+#   }
 
-  condition {
-    host_header {
-      values = ["prometheus.apse2.com"]
-    }
-  }
-}
+#   condition {
+#     host_header {
+#       values = ["prometheus.apse2.com"]
+#     }
+#   }
+# }
 
 
 ## Target groups
@@ -152,24 +152,24 @@ resource "aws_lb_target_group" "graylog_tg" {
   }
 }
 
-resource "aws_lb_target_group" "prometheus_tg" {
-  name        = "promethues-tg"
-  port        = 9090
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "instance"
+# resource "aws_lb_target_group" "prometheus_tg" {
+#   name        = "promethues-tg"
+#   port        = 9090
+#   protocol    = "HTTP"
+#   vpc_id      = aws_vpc.main.id
+#   target_type = "instance"
 
-  health_check {
-    enabled             = true
-    interval            = 30
-    path                = "/"
-    port                = "traffic-port"
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 5
-    matcher             = "200-399"
-  }
-}
+#   health_check {
+#     enabled             = true
+#     interval            = 30
+#     path                = "/"
+#     port                = "traffic-port"
+#     healthy_threshold   = 2
+#     unhealthy_threshold = 2
+#     timeout             = 5
+#     matcher             = "200-399"
+#   }
+# }
 
 
 ## Target group attachments
@@ -191,9 +191,9 @@ resource "aws_lb_target_group_attachment" "graylog_attachment" {
   port             = 9000
 }
 
-resource "aws_lb_target_group_attachment" "prometheus_attachment" {
-  target_group_arn = aws_lb_target_group.prometheus_tg.arn
-  target_id        = module.ec2_prometheus.id
-  port             = 9090
-}
+# resource "aws_lb_target_group_attachment" "prometheus_attachment" {
+#   target_group_arn = aws_lb_target_group.prometheus_tg.arn
+#   target_id        = module.ec2_prometheus.id
+#   port             = 9090
+# }
 
