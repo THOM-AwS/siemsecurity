@@ -23,10 +23,6 @@ resource "aws_ebs_volume" "gp3_volume_grafana" {
   availability_zone = "us-east-1a"
   size              = 10
   type              = "gp3"
-
-  tags = {
-    Name = "Grafana_persistence"
-  }
 }
 
 # Attach the first volume to the first instance
