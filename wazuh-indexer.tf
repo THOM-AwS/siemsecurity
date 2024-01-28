@@ -6,7 +6,7 @@ module "ec2_wazuh-indexer-01" {
   name = "wazuh-indexer-01"
 
   ami                    = "ami-0a3c3a20c09d6f377"
-  instance_type          = "m5.large"
+  instance_type          = "m5.xlarge"
   subnet_id              = aws_subnet.private1.id
   vpc_security_group_ids = [aws_security_group.all.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
