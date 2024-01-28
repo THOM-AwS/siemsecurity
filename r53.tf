@@ -64,3 +64,27 @@ resource "aws_route53_record" "grafana_record" {
     evaluate_target_health = true
   }
 }
+
+resource "aws_route53_record" "prometheus_record" {
+  zone_id = aws_route53_zone.apse2-name.zone_id
+  name    = "prometheus.apse2.com"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.soc_alb.dns_name
+    zone_id                = aws_lb.soc_alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "graylog_record" {
+  zone_id = aws_route53_zone.apse2-name.zone_id
+  name    = "graylog.apse2.com"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.soc_alb.dns_name
+    zone_id                = aws_lb.soc_alb.zone_id
+    evaluate_target_health = true
+  }
+}

@@ -22,10 +22,6 @@ resource "aws_ebs_volume" "gp3_volume_wazuh-indexer" {
   availability_zone = "us-east-1a"
   size              = 100
   type              = "gp3"
-
-  tags = {
-    Name = "wazuh_indexer_01_persistence"
-  }
 }
 
 # Attach the first volume to the first instance

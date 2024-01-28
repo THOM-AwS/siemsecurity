@@ -28,6 +28,7 @@ resource "aws_lb_listener" "https_listener" {
   }
 }
 
+## Listener rules
 resource "aws_lb_listener_rule" "grafana_subdomain" {
   listener_arn = aws_lb_listener.https_listener.arn
   priority     = 100
@@ -60,7 +61,40 @@ resource "aws_lb_listener_rule" "wazuh_subdomain" {
   }
 }
 
+resource "aws_lb_listener_rule" "graylog_subdomain" {
+  listener_arn = aws_lb_listener.https_listener.arn
+  priority     = 102
 
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.graylog_tg.arn
+  }
+
+  condition {
+    host_header {
+      values = ["graylog.apse2.com"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "prometheus_subdomain" {
+  listener_arn = aws_lb_listener.https_listener.arn
+  priority     = 104
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.prometheus_tg.arn
+  }
+
+  condition {
+    host_header {
+      values = ["prometheus.apse2.com"]
+    }
+  }
+}
+
+
+## Target groups
 resource "aws_lb_target_group" "grafana_tg" {
   name        = "grafana-tg"
   port        = 3000
@@ -80,13 +114,6 @@ resource "aws_lb_target_group" "grafana_tg" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "grafana_attachment" {
-  target_group_arn = aws_lb_target_group.grafana_tg.arn
-  target_id        = module.ec2_grafana.id
-  port             = 3000
-}
-
-# Wazuh Dashboard Target Group
 resource "aws_lb_target_group" "wazuh_tg" {
   name        = "wazuh-tg"
   port        = 443
@@ -106,9 +133,67 @@ resource "aws_lb_target_group" "wazuh_tg" {
   }
 }
 
-# Wazuh Dashboard Target Group Attachment
+resource "aws_lb_target_group" "graylog_tg" {
+  name        = "grafana-tg"
+  port        = 9000
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "instance"
+
+  health_check {
+    enabled             = true
+    interval            = 30
+    path                = "/"
+    port                = "traffic-port"
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 5
+    matcher             = "200-399"
+  }
+}
+
+resource "aws_lb_target_group" "prometheus_tg" {
+  name        = "promethues-tg"
+  port        = 9090
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "instance"
+
+  health_check {
+    enabled             = true
+    interval            = 30
+    path                = "/"
+    port                = "traffic-port"
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 5
+    matcher             = "200-399"
+  }
+}
+
+
+## Target group attachments
+resource "aws_lb_target_group_attachment" "grafana_attachment" {
+  target_group_arn = aws_lb_target_group.grafana_tg.arn
+  target_id        = module.ec2_grafana.id
+  port             = 3000
+}
+
 resource "aws_lb_target_group_attachment" "wazuh_attachment" {
   target_group_arn = aws_lb_target_group.wazuh_tg.arn
   target_id        = module.ec2_wazuh-indexer-01.id
   port             = 443
 }
+
+resource "aws_lb_target_group_attachment" "graylog_attachment" {
+  target_group_arn = aws_lb_target_group.graylog_tg.arn
+  target_id        = module.ec2_wazuh-indexer-01.id
+  port             = 9000
+}
+
+resource "aws_lb_target_group_attachment" "prometheus_attachment" {
+  target_group_arn = aws_lb_target_group.prometheus_tg.arn
+  target_id        = module.ec2_prometheus.id
+  port             = 9090
+}
+
