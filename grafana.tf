@@ -7,7 +7,7 @@ module "ec2_grafana" {
   name = "Grafana"
 
   ami                    = "ami-0a3c3a20c09d6f377"
-  instance_type          = "t2.small"
+  instance_type          = "t3.small"
   subnet_id              = aws_subnet.private1.id
   vpc_security_group_ids = [aws_security_group.all.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
