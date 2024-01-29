@@ -1,13 +1,13 @@
 
-module "ec2_prometheus" {
+module "ec2_graylog" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "3.0.0"
 
-  name = "Prometheus"
+  name = "graylog"
 
   ami                    = "ami-0a3c3a20c09d6f377"
   instance_type          = "t3.small"
-  subnet_id              = aws_subnet.private2.id
+  subnet_id              = aws_subnet.private1.id
   vpc_security_group_ids = [aws_security_group.all.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
 
@@ -18,20 +18,16 @@ module "ec2_prometheus" {
 }
 
 # Persistent EBS Volume
-resource "aws_ebs_volume" "gp3_volume_prometheus" {
-  availability_zone = "us-east-1b"
+resource "aws_ebs_volume" "gp3_volume_graylog" {
+  availability_zone = "us-east-1a"
   size              = 100
   type              = "gp3"
-
-  tags = {
-    Name = "prometheus_persistence"
-  }
 }
 
 # Attach the first volume to the first instance
-resource "aws_volume_attachment" "ebs_att_prometheus" {
+resource "aws_volume_attachment" "ebs_att_graylog" {
   device_name  = "/dev/sdh"
-  volume_id    = aws_ebs_volume.gp3_volume_prometheus.id
-  instance_id  = module.ec2_prometheus.id
+  volume_id    = aws_ebs_volume.gp3_volume_graylog.id
+  instance_id  = module.ec2_graylog.id
   force_detach = true
 }
