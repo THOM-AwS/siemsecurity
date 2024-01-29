@@ -187,7 +187,7 @@ resource "aws_lb_target_group_attachment" "wazuh_attachment" {
 
 resource "aws_lb_target_group_attachment" "graylog_attachment" {
   target_group_arn = aws_lb_target_group.graylog_tg.arn
-  target_id        = module.ec2_wazuh-indexer-01.id
+  target_id        = module.ec2_graylog.id
   port             = 9000
 }
 
