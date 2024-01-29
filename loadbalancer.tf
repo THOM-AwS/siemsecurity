@@ -136,7 +136,7 @@ resource "aws_lb_target_group" "wazuh_tg" {
 resource "aws_lb_target_group" "graylog_tg" {
   name        = "graylog-tg"
   port        = 9000
-  protocol    = "HTTP"
+  protocol    = "HTTPS"
   vpc_id      = aws_vpc.main.id
   target_type = "instance"
 
