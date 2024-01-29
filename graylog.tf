@@ -18,7 +18,7 @@ module "ec2_graylog" {
 }
 
 # Persistent EBS Volume
-resource "aws_ebs_volume" "gp3_volume_grayog" {
+resource "aws_ebs_volume" "gp3_volume_graylog" {
   availability_zone = "us-east-1a"
   size              = 100
   type              = "gp3"
