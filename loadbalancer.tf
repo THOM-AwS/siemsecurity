@@ -36,12 +36,8 @@ resource "aws_lb_listener" "wazuh_listener" {
   certificate_arn   = aws_acm_certificate_validation.apse2_wildcard_cert_validation.certificate_arn
 
   default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "404 Not Found"
-      status_code  = "404"
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.wazuh_agent_tg.arn
   }
 }
 
@@ -53,12 +49,8 @@ resource "aws_lb_listener" "wazuh_listener_rego" {
   certificate_arn   = aws_acm_certificate_validation.apse2_wildcard_cert_validation.certificate_arn
 
   default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "404 Not Found"
-      status_code  = "404"
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.wazuh_agent_rego_tg.arn
   }
 }
 
@@ -79,37 +71,37 @@ resource "aws_lb_listener_rule" "grafana_subdomain" {
   }
 }
 
-resource "aws_lb_listener_rule" "wazuh_agent_subdomain" {
-  listener_arn = aws_lb_listener.wazuh_listener.arn
-  priority     = 101
+# resource "aws_lb_listener_rule" "wazuh_agent_subdomain" {
+#   listener_arn = aws_lb_listener.wazuh_listener.arn
+#   priority     = 101
 
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.wazuh_agent_tg.arn
-  }
+#   action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.wazuh_agent_tg.arn
+#   }
 
-  condition {
-    host_header {
-      values = ["agents.apse2.com"]
-    }
-  }
-}
+#   condition {
+#     host_header {
+#       values = ["agents.apse2.com"]
+#     }
+#   }
+# }
 
-resource "aws_lb_listener_rule" "wazuh_agent_rego_subdomain" {
-  listener_arn = aws_lb_listener.wazuh_listener_rego.arn
-  priority     = 102
+# resource "aws_lb_listener_rule" "wazuh_agent_rego_subdomain" {
+#   listener_arn = aws_lb_listener.wazuh_listener_rego.arn
+#   priority     = 102
 
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.wazuh_agent_rego_tg.arn
-  }
+#   action {
+#     type             = "forward"
+#     target_group_arn = aws_lb_target_group.wazuh_agent_rego_tg.arn
+#   }
 
-  condition {
-    host_header {
-      values = ["agents.apse2.com"]
-    }
-  }
-}
+#   condition {
+#     host_header {
+#       values = ["agents.apse2.com"]
+#     }
+#   }
+# }
 
 resource "aws_lb_listener_rule" "wazuh_subdomain" {
   listener_arn = aws_lb_listener.https_listener.arn
