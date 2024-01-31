@@ -234,7 +234,7 @@ resource "aws_lb_target_group_attachment" "grafana_attachment" {
 resource "aws_lb_target_group_attachment" "wazuh_agent_attachment" {
   target_group_arn = aws_lb_target_group.wazuh_agent_tg.arn
   target_id        = module.ec2_wazuh-indexer-01.id
-  port             = 443
+  port             = 1515
 }
 
 resource "aws_lb_target_group_attachment" "wazuh_attachment" {
