@@ -96,7 +96,7 @@ resource "aws_lb_listener_rule" "wazuh_agent_subdomain" {
 }
 
 resource "aws_lb_listener_rule" "wazuh_agent_rego_subdomain" {
-  listener_arn = aws_lb_listener.wazuh_listener.arn
+  listener_arn = aws_lb_listener.wazuh_listener_rego.arn
   priority     = 102
 
   action {
@@ -169,6 +169,17 @@ resource "aws_lb_target_group" "wazuh_agent_tg" {
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
   target_type = "instance"
+
+  health_check {
+    enabled             = true
+    interval            = 30
+    path                = "/"
+    port                = "traffic-port"
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 5
+    matcher             = "200-499"
+  }
 }
 
 resource "aws_lb_target_group" "wazuh_agent_rego_tg" {
@@ -177,6 +188,17 @@ resource "aws_lb_target_group" "wazuh_agent_rego_tg" {
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
   target_type = "instance"
+
+  health_check {
+    enabled             = true
+    interval            = 30
+    path                = "/"
+    port                = "traffic-port"
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 5
+    matcher             = "200-499"
+  }
 }
 
 resource "aws_lb_target_group" "wazuh_tg" {
