@@ -131,7 +131,7 @@ resource "aws_lb_target_group" "grafana_tg" {
 }
 
 resource "aws_lb_target_group" "wazuh_agent_tg" {
-  name        = "grafana-tg"
+  name        = "wazuh-agent-tg"
   port        = 1515
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
