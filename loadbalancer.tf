@@ -96,7 +96,7 @@ resource "aws_lb_listener_rule" "wazuh_agent_subdomain" {
 }
 
 resource "aws_lb_listener_rule" "wazuh_agent_rego_subdomain" {
-  listener_arn = aws_lb_listener.wazuh_listener.arn
+  listener_arn = aws_lb_listener.wazuh_listener_rego.arn
   priority     = 102
 
   action {
