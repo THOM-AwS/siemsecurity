@@ -47,7 +47,7 @@ resource "aws_lb_listener_rule" "grafana_subdomain" {
 
 resource "aws_lb_listener_rule" "wazuh_agent_subdomain" {
   listener_arn = aws_lb_listener.https_listener.arn
-  priority     = 100
+  priority     = 103
 
   action {
     type             = "forward"
