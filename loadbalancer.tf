@@ -64,7 +64,7 @@ resource "aws_lb_listener_rule" "grafana_subdomain" {
 
 resource "aws_lb_listener_rule" "wazuh_agent_subdomain" {
   listener_arn = aws_lb_listener.wazuh_listener.arn
-  priority     = 100
+  priority     = 101
 
   action {
     type             = "forward"
@@ -80,7 +80,7 @@ resource "aws_lb_listener_rule" "wazuh_agent_subdomain" {
 
 resource "aws_lb_listener_rule" "wazuh_agent_rego_subdomain" {
   listener_arn = aws_lb_listener.wazuh_listener.arn
-  priority     = 100
+  priority     = 102
 
   action {
     type             = "forward"
@@ -96,7 +96,7 @@ resource "aws_lb_listener_rule" "wazuh_agent_rego_subdomain" {
 
 resource "aws_lb_listener_rule" "wazuh_subdomain" {
   listener_arn = aws_lb_listener.https_listener.arn
-  priority     = 101
+  priority     = 103
 
   action {
     type             = "forward"
@@ -112,7 +112,7 @@ resource "aws_lb_listener_rule" "wazuh_subdomain" {
 
 resource "aws_lb_listener_rule" "graylog_subdomain" {
   listener_arn = aws_lb_listener.https_listener.arn
-  priority     = 102
+  priority     = 104
 
   action {
     type             = "forward"
