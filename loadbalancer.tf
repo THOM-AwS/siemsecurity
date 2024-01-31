@@ -214,7 +214,7 @@ resource "aws_lb_target_group_attachment" "wazuh_agent_attachment" {
 }
 
 resource "aws_lb_target_group_attachment" "wazuh_agent_rego_attachment" {
-  target_group_arn = aws_lb_target_group.wazuh_agent_tg.arn
+  target_group_arn = aws_lb_target_group.wazuh_agent_rego_tg.arn
   target_id        = module.ec2_wazuh-indexer-01.id
   port             = 1515
 }
