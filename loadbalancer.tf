@@ -64,11 +64,27 @@ resource "aws_lb_listener_rule" "grafana_subdomain" {
 
 resource "aws_lb_listener_rule" "wazuh_agent_subdomain" {
   listener_arn = aws_lb_listener.wazuh_listener.arn
-  priority     = 103
+  priority     = 100
 
   action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.wazuh_agent_tg.arn
+  }
+
+  condition {
+    host_header {
+      values = ["agents.apse2.com"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "wazuh_agent_rego_subdomain" {
+  listener_arn = aws_lb_listener.wazuh_listener.arn
+  priority     = 100
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.wazuh_agent_rego_tg.arn
   }
 
   condition {
@@ -149,6 +165,25 @@ resource "aws_lb_target_group" "grafana_tg" {
 
 resource "aws_lb_target_group" "wazuh_agent_tg" {
   name        = "wazuh-agent-tg"
+  port        = 1514
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "instance"
+
+  health_check {
+    enabled             = true
+    interval            = 30
+    path                = "/"
+    port                = "traffic-port"
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+    timeout             = 5
+    matcher             = "200-399"
+  }
+}
+
+resource "aws_lb_target_group" "wazuh_agent_rego_tg" {
+  name        = "wazuh-agent-rego-tg"
   port        = 1515
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
@@ -232,6 +267,12 @@ resource "aws_lb_target_group_attachment" "grafana_attachment" {
 }
 
 resource "aws_lb_target_group_attachment" "wazuh_agent_attachment" {
+  target_group_arn = aws_lb_target_group.wazuh_agent_tg.arn
+  target_id        = module.ec2_wazuh-indexer-01.id
+  port             = 1514
+}
+
+resource "aws_lb_target_group_attachment" "wazuh_agent_rego_attachment" {
   target_group_arn = aws_lb_target_group.wazuh_agent_tg.arn
   target_id        = module.ec2_wazuh-indexer-01.id
   port             = 1515
