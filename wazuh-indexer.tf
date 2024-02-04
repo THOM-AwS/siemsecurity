@@ -10,6 +10,17 @@ module "ec2_wazuh-indexer-01" {
   subnet_id              = aws_subnet.private1.id
   vpc_security_group_ids = [aws_security_group.all.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
+  root_block_device = [
+    {
+      # encrypted   = true
+      volume_type = "gp3"
+      # throughput  = 200
+      volume_size = 50
+      # tags = {
+      #   Name = "my-root-block"
+      # }
+    },
+  ]
 
   tags = {
     Terraform   = "true"
