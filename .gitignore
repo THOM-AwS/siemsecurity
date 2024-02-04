@@ -36,3 +36,4 @@ terraform.rc
 
 *.pem
 certs/
+.DS_Store
