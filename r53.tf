@@ -100,3 +100,12 @@ resource "aws_route53_record" "wazuh_agents_record" {
     evaluate_target_health = true
   }
 }
+
+# DNS Record in Route 53 for the NLB
+resource "aws_route53_record" "nlb_dns" {
+  zone_id = aws_route53_zone.apse2-name.zone_id
+  name    = "listen.apse2.com"
+  type    = "CNAME"
+  ttl     = "300"
+  records = [aws_lb.nlb_wazuh.dns_name]
+}

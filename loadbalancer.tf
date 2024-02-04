@@ -28,40 +28,6 @@ resource "aws_lb_listener" "https_listener" {
   }
 }
 
-resource "aws_lb_listener" "wazuh_listener" {
-  load_balancer_arn = aws_lb.soc_alb.arn
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  port              = "1514"
-  protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate_validation.apse2_wildcard_cert_validation.certificate_arn
-
-  default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "404 Not Found"
-      status_code  = "404"
-    }
-  }
-}
-
-resource "aws_lb_listener" "wazuh_listener_rego" {
-  load_balancer_arn = aws_lb.soc_alb.arn
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  port              = "1515"
-  protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate_validation.apse2_wildcard_cert_validation.certificate_arn
-
-  default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "404 Not Found"
-      status_code  = "404"
-    }
-  }
-}
-
 ## Listener rules
 resource "aws_lb_listener_rule" "grafana_subdomain" {
   listener_arn = aws_lb_listener.https_listener.arn
@@ -75,38 +41,6 @@ resource "aws_lb_listener_rule" "grafana_subdomain" {
   condition {
     host_header {
       values = ["grafana.apse2.com"]
-    }
-  }
-}
-
-resource "aws_lb_listener_rule" "wazuh_agent_subdomain" {
-  listener_arn = aws_lb_listener.wazuh_listener.arn
-  priority     = 101
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.wazuh_agent_tg.arn
-  }
-
-  condition {
-    host_header {
-      values = ["agents.apse2.com"]
-    }
-  }
-}
-
-resource "aws_lb_listener_rule" "wazuh_agent_rego_subdomain" {
-  listener_arn = aws_lb_listener.wazuh_listener_rego.arn
-  priority     = 102
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.wazuh_agent_rego_tg.arn
-  }
-
-  condition {
-    host_header {
-      values = ["agents.apse2.com"]
     }
   }
 }
@@ -163,44 +97,6 @@ resource "aws_lb_target_group" "grafana_tg" {
   }
 }
 
-resource "aws_lb_target_group" "wazuh_agent_tg" {
-  name        = "wazuh-agent-tg"
-  port        = 1514
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "instance"
-
-  health_check {
-    enabled             = true
-    interval            = 30
-    path                = "/"
-    port                = "traffic-port"
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 5
-    matcher             = "200-499"
-  }
-}
-
-resource "aws_lb_target_group" "wazuh_agent_rego_tg" {
-  name        = "wazuh-agent-rego-tg"
-  port        = 1515
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "instance"
-
-  health_check {
-    enabled             = true
-    interval            = 30
-    path                = "/"
-    port                = "traffic-port"
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 5
-    matcher             = "200-499"
-  }
-}
-
 resource "aws_lb_target_group" "wazuh_tg" {
   name        = "wazuh-tg"
   port        = 443
@@ -244,18 +140,6 @@ resource "aws_lb_target_group_attachment" "grafana_attachment" {
   target_group_arn = aws_lb_target_group.grafana_tg.arn
   target_id        = module.ec2_grafana.id
   port             = 3000
-}
-
-resource "aws_lb_target_group_attachment" "wazuh_agent_attachment" {
-  target_group_arn = aws_lb_target_group.wazuh_agent_tg.arn
-  target_id        = module.ec2_wazuh-indexer-01.id
-  port             = 1514
-}
-
-resource "aws_lb_target_group_attachment" "wazuh_agent_rego_attachment" {
-  target_group_arn = aws_lb_target_group.wazuh_agent_rego_tg.arn
-  target_id        = module.ec2_wazuh-indexer-01.id
-  port             = 1515
 }
 
 resource "aws_lb_target_group_attachment" "wazuh_attachment" {
