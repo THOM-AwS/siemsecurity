@@ -50,4 +50,16 @@ resource "aws_lb_listener" "listener_1515" {
   }
 }
 
+# Attach the Wazuh indexer instance to the target group for port 1514
+resource "aws_lb_target_group_attachment" "attach_wazuh_1514" {
+  target_group_arn = aws_lb_target_group.tg_1514.arn
+  target_id        = module.ec2_wazuh-indexer-01.id
+  port             = 1514
+}
 
+# Attach the Wazuh indexer instance to the target group for port 1515
+resource "aws_lb_target_group_attachment" "attach_wazuh_1515" {
+  target_group_arn = aws_lb_target_group.tg_1515.arn
+  target_id        = module.ec2_wazuh-indexer-01.id
+  port             = 1515
+}
