@@ -23,8 +23,8 @@ resource "aws_lb_target_group" "tg_1515" {
   vpc_id   = aws_vpc.main.id
 }
 
-resource "aws_lb_target_group" "tg_5500" {
-  name     = "tg-5500"
+resource "aws_lb_target_group" "tg_55000" {
+  name     = "tg-55000"
   port     = 55000
   protocol = "TCP"
   vpc_id   = aws_vpc.main.id
@@ -53,14 +53,14 @@ resource "aws_lb_listener" "listener_1515" {
   }
 }
 
-resource "aws_lb_listener" "listener_5500" {
+resource "aws_lb_listener" "listener_55000" {
   load_balancer_arn = aws_lb.nlb_wazuh.arn
   port              = 55000
   protocol          = "TCP"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.tg_5500.arn
+    target_group_arn = aws_lb_target_group.tg_55000.arn
   }
 }
 
@@ -79,8 +79,8 @@ resource "aws_lb_target_group_attachment" "attach_wazuh_1515" {
 }
 
 # Attach the Wazuh indexer instance to the target group for port 1515
-resource "aws_lb_target_group_attachment" "attach_wazuh_5500" {
-  target_group_arn = aws_lb_target_group.tg_5500.arn
+resource "aws_lb_target_group_attachment" "attach_wazuh_55000" {
+  target_group_arn = aws_lb_target_group.tg_55000.arn
   target_id        = module.ec2_wazuh-indexer-01.id
   port             = 55000
 }
