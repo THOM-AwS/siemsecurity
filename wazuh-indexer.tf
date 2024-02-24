@@ -1,24 +1,19 @@
-
-module "ec2_wazuh-indexer-01" {
+module "ec2_wazuh" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "3.0.0"
 
-  name = "wazuh-indexer-01"
+  name = "wazuh"
 
-  ami                    = "ami-0a3c3a20c09d6f377"
-  instance_type          = "m5.xlarge"
+  ami                    = "ami-09ccb67fcbf1d625c"
+  instance_type          = "c5.xlarge"
   subnet_id              = aws_subnet.private1.id
   vpc_security_group_ids = [aws_security_group.all.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_instance_profile.name
+
   root_block_device = [
     {
-      # encrypted   = true
       volume_type = "gp3"
-      # throughput  = 200
-      volume_size = 50
-      # tags = {
-      #   Name = "my-root-block"
-      # }
+      volume_size = 100
     },
   ]
 
@@ -26,19 +21,22 @@ module "ec2_wazuh-indexer-01" {
     Terraform   = "true"
     Environment = "prod"
   }
-}
 
-# Persistent EBS Volume
-resource "aws_ebs_volume" "gp3_volume_wazuh-indexer" {
-  availability_zone = "us-east-1a"
-  size              = 100
-  type              = "gp3"
-}
+  user_data = <<-EOF
+    #!/bin/bash
+    # Commands to install Wazuh and Let's Encrypt certbot
+    # Update and install necessary packages
+    apt-get update && apt-get upgrade -y
+    apt-get install -y wget apt-transport-https lsb-release gnupg curl
 
-# Attach the first volume to the first instance
-resource "aws_volume_attachment" "ebs_att_wazuh-indexer-01" {
-  device_name  = "/dev/sdh"
-  volume_id    = aws_ebs_volume.gp3_volume_wazuh-indexer.id
-  instance_id  = module.ec2_wazuh-indexer-01.id
-  force_detach = true
+    # Install Wazuh manager
+    curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | apt-key add -
+    echo "deb https://packages.wazuh.com/4.x/apt/ stable main" | tee /etc/apt/sources.list.d/wazuh.list
+    apt-get update
+    apt-get install -y wazuh-manager
+
+    # Install and configure Let's Encrypt certbot (HTTP challenge)
+    apt-get install -y certbot python3-certbot-apache
+    certbot --apache -d 127cyber.com --non-interactive --agree-tos -m your@email.com --redirect
+  EOF
 }
