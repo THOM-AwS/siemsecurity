@@ -16,7 +16,7 @@ resource "aws_lb_listener" "https_listener" {
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   port              = "443"
   protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate_validation.apse2_wildcard_cert_validation.certificate_arn
+  certificate_arn   = aws_acm_certificate_validation._127cyber_wildcard_cert_validation.certificate_arn
 
   default_action {
     type = "fixed-response"
@@ -40,7 +40,7 @@ resource "aws_lb_listener_rule" "grafana_subdomain" {
 
   condition {
     host_header {
-      values = ["grafana.apse2.com"]
+      values = ["grafana.127cyber.com"]
     }
   }
 }
@@ -56,7 +56,7 @@ resource "aws_lb_listener_rule" "wazuh_subdomain" {
 
   condition {
     host_header {
-      values = ["wazuh.apse2.com"]
+      values = ["wazuh.127cyber.com"]
     }
   }
 }
@@ -72,7 +72,7 @@ resource "aws_lb_listener_rule" "graylog_subdomain" {
 
   condition {
     host_header {
-      values = ["graylog.apse2.com"]
+      values = ["graylog.127cyber.com"]
     }
   }
 }
@@ -135,23 +135,23 @@ resource "aws_lb_target_group" "graylog_tg" {
   }
 }
 
-## Target group attachments
-resource "aws_lb_target_group_attachment" "grafana_attachment" {
-  target_group_arn = aws_lb_target_group.grafana_tg.arn
-  target_id        = module.ec2_grafana.id
-  port             = 3000
-}
+# ## Target group attachments
+# resource "aws_lb_target_group_attachment" "grafana_attachment" {
+#   target_group_arn = aws_lb_target_group.grafana_tg.arn
+#   target_id        = module.ec2_grafana.id
+#   port             = 3000
+# }
 
 resource "aws_lb_target_group_attachment" "wazuh_attachment" {
   target_group_arn = aws_lb_target_group.wazuh_tg.arn
-  target_id        = module.ec2_wazuh-indexer-01.id
+  target_id        = module.ec2_wazuh.id
   port             = 443
 }
 
-resource "aws_lb_target_group_attachment" "graylog_attachment" {
-  target_group_arn = aws_lb_target_group.graylog_tg.arn
-  target_id        = module.ec2_graylog.id
-  port             = 9000
-}
+# resource "aws_lb_target_group_attachment" "graylog_attachment" {
+#   target_group_arn = aws_lb_target_group.graylog_tg.arn
+#   target_id        = module.ec2_graylog.id
+#   port             = 9000
+# }
 
 
