@@ -30,6 +30,13 @@ resource "aws_lb_target_group" "tg_55000" {
   vpc_id   = aws_vpc.main.id
 }
 
+resource "aws_lb_target_group" "tg_9200" {
+  name     = "tg-9200"
+  port     = 9200
+  protocol = "TCP"
+  vpc_id   = aws_vpc.main.id
+}
+
 # TLS Listeners with ACM Certificate
 resource "aws_lb_listener" "listener_1514" {
   load_balancer_arn = aws_lb.nlb_wazuh.arn
@@ -64,6 +71,17 @@ resource "aws_lb_listener" "listener_55000" {
   }
 }
 
+resource "aws_lb_listener" "listener_9200" {
+  load_balancer_arn = aws_lb.nlb_wazuh.arn
+  port              = 9200
+  protocol          = "TCP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.tg_9200.arn
+  }
+}
+
 # Attach the Wazuh indexer instance to the target group for port 1514
 resource "aws_lb_target_group_attachment" "attach_wazuh_1514" {
   target_group_arn = aws_lb_target_group.tg_1514.arn
@@ -83,4 +101,10 @@ resource "aws_lb_target_group_attachment" "attach_wazuh_55000" {
   target_group_arn = aws_lb_target_group.tg_55000.arn
   target_id        = module.ec2_wazuh.id
   port             = 55000
+}
+
+resource "aws_lb_target_group_attachment" "attach_wazuh_9200" {
+  target_group_arn = aws_lb_target_group.tg_9200.arn
+  target_id        = module.ec2_wazuh.id
+  port             = 9200
 }
