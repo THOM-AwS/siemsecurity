@@ -60,8 +60,9 @@ mkdir -p /etc/wazuh-indexer/certs
 cp /etc/letsencrypt/live/admin.127cyber.com/fullchain.pem /etc/wazuh-indexer/certs/admin.pem
 cp /etc/letsencrypt/live/admin.127cyber.com/privkey.pem /etc/wazuh-indexer/certs/admin-key.pem
 cp /etc/letsencrypt/live/127cyber.com/fullchain.pem /etc/wazuh-indexer/certs/indexer.pem
-cp /etc/letsencrypt/live/127cyber.com/privkey.pem /etc/wazuh-indexer/certs/indexer-key.pem
-cat /etc/letsencrypt/live/127cyber.com/fullchain.pem > /etc/wazuh-indexer/certs/root-ca.pem
+cp /etc/letsencrypt/live/127cyber.com/chain.pem /etc/wazuh-indexer/certs/root-ca.pem
+openssl pkcs8 -topk8 -inform PEM -outform PEM -in /etc/letsencrypt/live/127cyber.com/privkey.pem -out /etc/wazuh-indexer/certs/indexer-key.pem -nocrypt
+
 chmod 500 /etc/wazuh-indexer/certs
 chmod 444 /etc/wazuh-indexer/certs/*
 chown -R wazuh-indexer:wazuh-indexer /etc/wazuh-indexer/certs
@@ -71,8 +72,8 @@ sed -i 's/-Xmx1g/-Xmx4g/g' /etc/wazuh-indexer/jvm.options
 
 mkdir -p /etc/wazuh-dashboard/certs
 cp /etc/letsencrypt/live/127cyber.com/fullchain.pem /etc/wazuh-dashboard/certs/dashboard.pem
-cp /etc/letsencrypt/live/127cyber.com/privkey.pem /etc/wazuh-dashboard/certs/dashboard-key.pem
-cat /etc/letsencrypt/live/127cyber.com/fullchain.pem > /etc/wazuh-dashboard/certs/root-ca.pem
+cp /etc/letsencrypt/live/127cyber.com/chain.pem /etc/wazuh-dashboard/certs/root-ca.pem
+openssl pkcs8 -topk8 -inform PEM -outform PEM -in /etc/letsencrypt/live/127cyber.com/privkey.pem -out /etc/wazuh-dashboard/certs/dashboard-key.pem -nocrypt
 chmod 500 /etc/wazuh-dashboard/certs
 chmod 444 /etc/wazuh-dashboard/certs/*
 chown -R wazuh-dashboard:wazuh-dashboard /etc/wazuh-dashboard/certs
@@ -86,7 +87,7 @@ sed -i "s/#discovery.seed_hosts:/discovery.seed_hosts:/g" /etc/wazuh-indexer/ope
 sed -i "s/#  - \"node-1-ip\"/ - \"$INSTANCE_IP\"/g" /etc/wazuh-indexer/opensearch.yml
 sed -i "s/\"node-1\"/\"$NODE_NAME\"/g" /etc/wazuh-indexer/opensearch.yml
 echo -e "\nbootstrap.memory_lock: true" | sudo tee -a /etc/wazuh-indexer/opensearch.yml
-sed -i "s/CN=admin,OU=Wazuh,O=Wazuh,L=California,C=US/CN=127cyber.com/g" /etc/wazuh-indexer/opensearch.yml
+sed -i "s/CN=admin,OU=Wazuh,O=Wazuh,L=California,C=US/CN=admin.127cyber.com/g" /etc/wazuh-indexer/opensearch.yml
 sed -i "s/CN=,OU=Wazuh,O=Wazuh,L=California,C=US/CN=127cyber.com/g" /etc/wazuh-indexer/opensearch.yml
 
 # /etc/wazuh-dashboard/opensearch_dashboards.yml
@@ -109,3 +110,7 @@ systemctl start wazuh-dashboard
 JAVA_HOME=/usr/share/wazuh-indexer/jdk runuser wazuh-indexer --shell=/bin/bash --command="cd /etc/wazuh-indexer/opensearch-security && /usr/share/wazuh-indexer/plugins/opensearch-security/tools/securityadmin.sh -cacert /etc/wazuh-indexer/certs/root-ca.pem -cert /etc/wazuh-indexer/certs/admin.pem -key /etc/wazuh-indexer/certs/admin-key.pem -h 127.0.0.1 -p 9200 -icl -nhnv"
   TEOF
 }
+
+# ossec.conf
+# make the cluster active
+# set the key
