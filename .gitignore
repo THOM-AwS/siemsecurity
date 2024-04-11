@@ -37,3 +37,6 @@ terraform.rc
 *.pem
 certs/
 .DS_Store
+
+key-awais.txt
+key-tom.txt

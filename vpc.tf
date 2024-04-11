@@ -92,6 +92,3 @@ resource "aws_route_table_association" "private2" {
   route_table_id = aws_route_table.private.id
 }
 
-data "aws_key_pair" "tom" {
-  key_name = "tom"
-}
