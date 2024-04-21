@@ -5,7 +5,7 @@ resource "aws_lb" "soc_alb" {
   name               = "soc-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.all.id]
+  security_groups    = [aws_security_group.all.id, aws_security_group.wazuh-nlb]
   subnets            = [aws_subnet.public1.id, aws_subnet.public2.id]
 
   enable_deletion_protection = false
@@ -172,3 +172,89 @@ resource "aws_lb_target_group_attachment" "wazuh_attachment" {
 # }
 
 
+resource "aws_security_group" "wazuh-nlb" {
+  name        = "Wazuh-NLB"
+  description = "Security group for Wazuh NLB"
+  vpc_id      = aws_vpc.main.id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 1514
+    to_port     = 1514
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 1515
+    to_port     = 1515
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 514
+    to_port     = 514
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 9200
+    to_port     = 9200
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 55000
+    to_port     = 55000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["220.233.86.20/32", "39.58.182.16/32"]
+  }
+
+  ingress {
+    from_port   = 514
+    to_port     = 514
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 9300
+    to_port     = 9400
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 1516
+    to_port     = 1516
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "Wazuh-NLB"
+  }
+}
