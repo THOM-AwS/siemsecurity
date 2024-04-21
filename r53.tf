@@ -82,10 +82,10 @@ resource "aws_route53_record" "grafana_record" {
 # }
 
 # DNS Record in Route 53 for the NLB
-# resource "aws_route53_record" "nlb_dns" {
-#   zone_id = data.aws_route53_zone._127cyber-name.zone_id
-#   name    = "listen.127cyber.com"
-#   type    = "CNAME"
-#   ttl     = "300"
-#   records = [aws_lb.nlb_wazuh.dns_name]
-# }
+resource "aws_route53_record" "nlb_dns" {
+  zone_id = data.aws_route53_zone._127cyber-name.zone_id
+  name    = "listen.127cyber.com"
+  type    = "CNAME"
+  ttl     = "300"
+  records = [aws_lb.nlb_wazuh.dns_name]
+}
