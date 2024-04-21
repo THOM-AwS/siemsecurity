@@ -5,7 +5,7 @@ resource "aws_lb" "soc_alb" {
   name               = "soc-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.all.id, aws_security_group.wazuh-nlb]
+  security_groups    = [aws_security_group.all.id, aws_security_group.wazuh-nlb.id]
   subnets            = [aws_subnet.public1.id, aws_subnet.public2.id]
 
   enable_deletion_protection = false
