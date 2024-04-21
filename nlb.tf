@@ -185,7 +185,7 @@ resource "aws_security_group" "wazuh-nlb" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["220.233.86.20/32", "39.58.182.16/32"]
+    cidr_blocks = ["220.233.86.20/32", "39.58.182.16/32", "206.84.143.26/32"]
   }
 
   ingress {
