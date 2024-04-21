@@ -57,6 +57,18 @@ resource "aws_route53_record" "wazuh_record" {
   }
 }
 
+resource "aws_route53_record" "grafana_record" {
+  zone_id = data.aws_route53_zone._127cyber-name.zone_id
+  name    = "dashboards.127cyber.com"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.soc_alb.dns_name
+    zone_id                = aws_lb.soc_alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
 # resource "aws_route53_record" "grafana_record" {
 #   zone_id = aws_route53_zone._127cyber-name.zone_id
 #   name    = "grafana.127cyber.com"
