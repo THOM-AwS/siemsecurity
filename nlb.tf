@@ -154,6 +154,13 @@ resource "aws_security_group" "wazuh-nlb" {
   }
 
   ingress {
+    from_port   = 1514
+    to_port     = 1514
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port   = 1515
     to_port     = 1515
     protocol    = "tcp"
